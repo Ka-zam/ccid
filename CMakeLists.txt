@@ -10,6 +10,11 @@ DESCRIPTION "A system identification tool aimed at Compact Cassette players"
 LANGUAGES CXX)
 
 # find required packages
+find_package(ALSA REQUIRED)
+if (ALSA_FOUND)
+	message("   Found ALSA sound library")
+endif()
+
 find_package(FFTW REQUIRED FLOAT_LIB)
 
 if (FFTW_FOUND)

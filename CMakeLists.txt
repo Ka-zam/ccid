@@ -1,5 +1,5 @@
 # Init
-cmake_minimum_required(VERSION 3.10...3.16)
+cmake_minimum_required(VERSION 3.10...3.17)
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 #set(CMAKE_CXX_STANDARD 11)
 
@@ -16,9 +16,19 @@ if (ALSA_FOUND)
 endif()
 
 find_package(FFTW REQUIRED FLOAT_LIB)
-
 if (FFTW_FOUND)
 	message("   Found FFTW3 single precision library")
+endif()
+
+find_package(Curses REQUIRED)
+if (CURSES_FOUND)
+	message("   Found curses")
+endif()
+
+find_package(Threads)
+if (THREADS_FOUND)
+	message("   Found threads")
+	set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 endif()
 
 # add directory

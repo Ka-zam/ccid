@@ -31,6 +31,8 @@ if (THREADS_FOUND)
 	set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 endif()
 
+find_package(VOLK REQUIRED)
+
 # add directory
 add_subdirectory(src)
 add_subdirectory(apps)

@@ -16,3 +16,8 @@ char* alsaversion()
 {
 	return SND_LIB_VERSION_STR;
 }
+
+const char* volkversion()
+{
+	return volk_version();
+}

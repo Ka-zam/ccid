@@ -9,6 +9,10 @@ VERSION 0.1
 DESCRIPTION "A system identification tool aimed at Compact Cassette players"
 LANGUAGES CXX C)
 
+# Options
+option(BUILD_SHARED_LIBS "Build shared or static libs." ON)
+
+
 # find required packages
 find_package(ALSA REQUIRED)
 if (ALSA_FOUND)
@@ -35,11 +39,18 @@ endif()
 
 find_package(VOLK REQUIRED)
 if (VOLK_FOUND)
-	message("    ${VOLK_LIBRARIES}")
-	message("    ${VOLK_INCLUDE_DIRS}")
+	message("   Found VOLK ${VOLK_VERSION}")
+	message("   ${VOLK_LIBRARIES}")
+	message("   ${VOLK_INCLUDE_DIRS}")
 endif()
 
 
 # add directory
 add_subdirectory(src)
 add_subdirectory(apps)
+
+
+# Status
+message("Installing to ${CMAKE_INSTALL_PREFIX}")
+message("Building shared is ${BUILD_SHARED_LIBS}")
+message("$ENV{HOME}")

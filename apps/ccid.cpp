@@ -15,16 +15,18 @@ void
 
 int
 main(){
-	// float a = 9.;
+	 float a = 9.;
 	// pthread_t t1, t2;
 	// std::string m1 = "this is t1";
 	// std::string m2 = "this is t2";
 
 	// printf("Using ALSA version: %s\n", alsaversion() );
 	// printf("Using FFTW version: %s\n", fftwversion() );
+	printf("Using VOLK version: %s\n", volkversion() );
 	// printf("a         = %9.4f\n", a );
 	// printf("sqrt(a)   = %9.4f\n", sqrt(a) );
-	// printf("2*sqrt(a) = %9.4f\n", doublesqrt(a) );
+	printf("2*sqrt(a) = %9.4f\n", doublesqrt(a) );
+	printf("3+6       = %d\n", ret3p(6) );
 
 	// int r = pthread_create(&t1, NULL, prtfun, (void*) &m1);
 	// r = pthread_create(&t2, NULL, prtfun, (void*) &m2);

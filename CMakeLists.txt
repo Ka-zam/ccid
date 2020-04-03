@@ -7,17 +7,19 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 project(ccid 
 VERSION 0.1 
 DESCRIPTION "A system identification tool aimed at Compact Cassette players"
-LANGUAGES CXX)
+LANGUAGES CXX C)
 
 # find required packages
 find_package(ALSA REQUIRED)
 if (ALSA_FOUND)
 	message("   Found ALSA sound library")
+	message("    ${ALSA_INCLUDE_DIRS}")
 endif()
 
 find_package(FFTW REQUIRED FLOAT_LIB)
 if (FFTW_FOUND)
 	message("   Found FFTW3 single precision library")
+	message("    ${FFTW_INCLUDE_DIRS}")
 endif()
 
 find_package(Curses REQUIRED)
@@ -32,6 +34,11 @@ if (THREADS_FOUND)
 endif()
 
 find_package(VOLK REQUIRED)
+if (VOLK_FOUND)
+	message("    ${VOLK_LIBRARIES}")
+	message("    ${VOLK_INCLUDE_DIRS}")
+endif()
+
 
 # add directory
 add_subdirectory(src)

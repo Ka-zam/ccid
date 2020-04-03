@@ -8,10 +8,7 @@ doublesqrt(float x)
 	return res;
 }
 
-char* alsaversion()
-{
-	return SND_LIB_VERSION_STR;
-}
+
 
 char* fftwversion()
 {

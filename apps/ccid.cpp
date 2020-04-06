@@ -6,6 +6,7 @@
 #include <curses.h>
 #include <string>
 #include <iostream>
+#include <complex>
 
 void
 *prtfun(void* s)
@@ -20,13 +21,15 @@ main(){
 	// std::string m1 = "this is t1";
 	// std::string m2 = "this is t2";
 
-	// printf("Using ALSA version: %s\n", alsaversion() );
-	// printf("Using FFTW version: %s\n", fftwversion() );
+
+	printf("Using ALSA version: %s\n", alsaversion() );
+	printf("Using FFTW version: %s\n", fftwversion() );
 	printf("Using VOLK version: %s\n", volkversion() );
 	// printf("a         = %9.4f\n", a );
 	// printf("sqrt(a)   = %9.4f\n", sqrt(a) );
 	printf("2*sqrt(a) = %9.4f\n", doublesqrt(a) );
 	printf("3+6       = %d\n", ret3p(6) );
+	//std::cout << "h.size_in() = " << h.size_in() << std::endl;
 
 	// int r = pthread_create(&t1, NULL, prtfun, (void*) &m1);
 	// r = pthread_create(&t2, NULL, prtfun, (void*) &m2);
@@ -41,7 +44,8 @@ main(){
 	// std::cout << ret3p(ch) << " 🥳 " << std::endl;
 
 	// pthread_exit(NULL);
-	constexpr int N = 5;
+	constexpr int N = 13;
+	harmest h(N);
 
 	int16_t* vec = NULL;
 	float* fec = NULL;
@@ -61,7 +65,20 @@ main(){
 		printf("fec[%d] = %5.2f\n", i, fec[i]);
 	}
 
-	free(vec);
-	free(fec);
+	h.cpydata(fec);
+	h.execute();
+	h.print();
+
+	fftwf_complex* y = h.output();
+	for (int i = 0; i < h.size_out(); ++i)
+	{
+		printf("out[%d] = %5.2f %5.2f*j\n", i, (*y)[0], (*y)[1]);
+		y++;
+	}
+
+
+
+	//free(vec);
+	//free(fec);
 	return(0);
 }

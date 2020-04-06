@@ -9,4 +9,4 @@ target_link_libraries(ccid PRIVATE harmest snditf pthread curses)
 add_executable(latency latency.c)
 target_link_libraries(latency PRIVATE m ${ALSA_LIBRARIES})
 
-target_compile_features(ccid PUBLIC cxx_std_11)
+target_compile_features(ccid PUBLIC cxx_std_14)

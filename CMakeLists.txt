@@ -21,6 +21,13 @@ if (ALSA_FOUND)
 	message("    ${ALSA_INCLUDE_DIRS}")
 endif()
 
+find_package(JACK REQUIRED)
+if (JACK_FOUND)
+	message("   Found JACK sound daemon ${JACK_VERSION}")
+	message("    ${JACK_LIBRARIES}")
+	message("    ${JACK_INCLUDE_DIRS}")
+endif()
+
 find_package(FFTW REQUIRED FLOAT_LIB)
 if (FFTW_FOUND)
 	message("   Found FFTW3 single precision library")

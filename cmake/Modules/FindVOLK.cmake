@@ -5,14 +5,14 @@
 FindVOLK
 --------
 
-Find the VOLK library. Starts looking in $HOME/local for a user compiled version
+Find the VOLK library. First looks in $HOME/local for a user compiled version
 
 Imported Targets
 ^^^^^^^^^^^^^^^^
 
 This module provides the following imported targets, if found:
 
-``VOLK::VOLK``
+``volk::volk``
   The VOLK library
 
 
@@ -36,11 +36,16 @@ Cache Variables
 The following cache variables may also be set:
 
 ``VOLK_INCLUDE_DIR``
-  The directory containing ``foo.h``.
+  The directory containing ``volk.h``.
 ``VOLK_LIBRARY``
-  The path to the Foo library.
+  The path to the VOLK library.
 
 #]=======================================================================]
+
+include(FeatureSummary)
+set_package_properties(volk PROPERTIES
+   URL "https://www.libvolk.org/"
+   DESCRIPTION "VOLK is the Vector-Optimized Library of Kernels")
 
 find_package(PkgConfig)
 pkg_check_modules(PC_VOLK QUIET volk)

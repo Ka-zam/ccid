@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <complex>
+#include <unistd.h>
 
 void
 *prtfun(void* s)
@@ -21,9 +22,9 @@ main(){
 	// std::string m1 = "this is t1";
 	// std::string m2 = "this is t2";
 
-	printf("Using ALSA version: %s\n", alsaversion() );
+	// printf("Using ALSA version: %s\n", alsaversion() );
 	printf("Using FFTW version: %s\n", fftwversion() );
-	printf("Using VOLK version: %s\n", volkversion() );
+	// printf("Using VOLK version: %s\n", volkversion() );
 
 	//std::cout << "h.size_in() = " << h.size_in() << std::endl;
 
@@ -58,9 +59,11 @@ main(){
 
 	free(vec);
 
-	const char* c = "hw:4,0";
-	snditf ad(c);
+	//const char* c = "hw:4,0";
+	snditf ad;
 	ad.prt();
 	//char* dev = "plughw:2,0";
+	sleep(3);
+
 	return(0);
 }

@@ -7,11 +7,11 @@ add_library(snditf snditf.cpp ${SNDITF_HEADER_LIST})
 
 # We need this directory, and users of our library will need it too
 target_include_directories(harmest PUBLIC ../include ${VOLK_INCLUDE_DIRS} ${FFTW_INCLUDE_DIRS})
-target_include_directories(snditf PUBLIC ../include ${VOLK_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS})
+target_include_directories(snditf PUBLIC ../include ${VOLK_INCLUDE_DIRS} ${JACK_INCLUDE_DIRS})
 
 # Library dependencies
 target_link_libraries(harmest PRIVATE ${FFTW_LIBRARIES} ${VOLK_LIBRARIES})
-target_link_libraries(snditf PRIVATE ${ALSA_LIBRARIES} ${VOLK_LIBRARIES})
+target_link_libraries(snditf PRIVATE ${JACK_LIBRARIES} ${VOLK_LIBRARIES})
 
 # All users of this library will need at least C++11
 target_compile_features(harmest PUBLIC cxx_std_14)

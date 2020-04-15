@@ -14,43 +14,44 @@ option(BUILD_SHARED_LIBS "Build shared or static libs." ON)
 
 
 # find required packages
+
 find_package(ALSA REQUIRED)
-if (ALSA_FOUND)
-	message("   Found ALSA sound library")
-	message("    ${ALSA_LIBRARIES}")
-	message("    ${ALSA_INCLUDE_DIRS}")
-endif()
+# if (ALSA_FOUND)
+# 	message("   Found ALSA sound library")
+# 	message("    ${ALSA_LIBRARIES}")
+# 	message("    ${ALSA_INCLUDE_DIRS}")
+# endif()
 
 find_package(JACK REQUIRED)
 if (JACK_FOUND)
 	message("   Found JACK sound daemon ${JACK_VERSION}")
-	message("    ${JACK_LIBRARIES}")
-	message("    ${JACK_INCLUDE_DIRS}")
+	#message("    ${JACK_LIBRARIES}")
+	#message("    ${JACK_INCLUDE_DIRS}")
 endif()
 
 find_package(FFTW REQUIRED FLOAT_LIB)
 if (FFTW_FOUND)
 	message("   Found FFTW3 single precision library")
-	message("    ${FFTW_LIBRARIES}")
-	message("    ${FFTW_INCLUDE_DIRS}")
+	#message("    ${FFTW_LIBRARIES}")
+	#message("    ${FFTW_INCLUDE_DIRS}")
 endif()
 
 find_package(Curses REQUIRED)
 if (CURSES_FOUND)
-	message("   Found curses")
+	#message("   Found curses")
 endif()
 
 find_package(Threads)
 if (THREADS_FOUND)
-	message("   Found threads")
+	#message("   Found threads")
 	set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 endif()
 
 find_package(VOLK REQUIRED)
 if (VOLK_FOUND)
 	message("   Found VOLK ${VOLK_VERSION}")
-	message("   ${VOLK_LIBRARIES}")
-	message("   ${VOLK_INCLUDE_DIRS}")
+	#message("   ${VOLK_LIBRARIES}")
+	#message("   ${VOLK_INCLUDE_DIRS}")
 endif()
 
 
@@ -58,8 +59,7 @@ endif()
 add_subdirectory(src)
 add_subdirectory(apps)
 
-
 # Status
 message("Installing to ${CMAKE_INSTALL_PREFIX}")
 message("Building shared is ${BUILD_SHARED_LIBS}")
-message("$ENV{HOME}")
+#message("$ENV{HOME}")

@@ -12,28 +12,27 @@
 //const char* alsaversion();
 //const char* volkversion();
 
-class jackhandler
+// https://stackoverflow.com/questions/1000663/using-a-c-class-member-function-as-a-c-callback-function
+
+template <typename T>
+struct Callback;
 {
-public:
-  void addhandler(std::function<void(int)> callback)
-  {
-    callback(1);
-  }
-}
+  
+};
 
 class snditf
 {
   public:
-    snditf();
+    snditf(jack_client_t* client);
     ~snditf();
     void prt();
-    int connect();
     int work(jack_nframes_t nframes, void *arg);
   private:
-    jack_port_t *d_in;
-    jack_port_t *d_out;
-    jack_client_t *d_client;
-    jack_status_t d_status;
+    uint64_t d_nprocessed;
+    jack_port_t*   d_in;
+    jack_port_t*   d_out;
+    jack_client_t* d_client;
+    //jack_status_t d_status;
 };
 
 #endif

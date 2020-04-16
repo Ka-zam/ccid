@@ -4,7 +4,7 @@
 
 
 add_executable(ccid ccid.cpp)
-target_link_libraries(ccid PRIVATE harmest snditf pthread curses)
+target_link_libraries(ccid PRIVATE harmest snditf pthread curses ${JACK_LIBRARIES})
 
 add_executable(latency latency.c)
 target_link_libraries(latency PRIVATE m ${ALSA_LIBRARIES})

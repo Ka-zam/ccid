@@ -13,12 +13,31 @@
 //const char* volkversion();
 
 // https://stackoverflow.com/questions/1000663/using-a-c-class-member-function-as-a-c-callback-function
+// https://stackoverflow.com/questions/19808054/convert-c-function-pointer-to-c-function-pointer/19809787
 
 template <typename T>
 struct Callback;
-{
-  
+
+template <typename Ret, typename... Params>
+struct Callback<Ret(Params...)> {
+   template <typename... Args> 
+   static Ret callback(Args... args) {                    
+      return func(args...);  
+   }
+   static std::function<Ret(Params...)> func; 
 };
+
+template <typename Ret, typename... Params>
+std::function<Ret(Params...)> Callback<Ret(Params...)>::func;
+
+/*
+void register_with_library(int (*func)(unsigned int n, void* a)) {
+   int x = 0, y = 1;
+   int o = func(&x, &y);
+   printf("Value: %i\n", o);
+}
+*/
+
 
 class snditf
 {
@@ -34,5 +53,6 @@ class snditf
     jack_client_t* d_client;
     //jack_status_t d_status;
 };
+typedef int (*callback_t)(unsigned int, void*);
 
 #endif

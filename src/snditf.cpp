@@ -8,7 +8,7 @@
 */
 
 
-snditf::snditf(jack_client_t* client)
+Snditf::Snditf(jack_client_t* client)
 {
 	/*
 	d_client = jack_client_open("snditf", JackNullOption, &d_status );
@@ -34,24 +34,26 @@ snditf::snditf(jack_client_t* client)
 }
 
 
-snditf::~snditf()
+Snditf::~Snditf()
 {
     //jack_client_close(d_client);
 }
 
 void
-snditf::prt()
+Snditf::prt()
 {
 	printf("Processed samples: %ld\n", d_nprocessed );
 }
 
 int 
-snditf::work(jack_nframes_t nframes, void *arg)
+Snditf::work(jack_nframes_t nframes, void *arg)
 {
     jack_default_audio_sample_t *in, *out;
 
     in =  (jack_default_audio_sample_t*) jack_port_get_buffer(d_in, nframes);
     out = (jack_default_audio_sample_t*) jack_port_get_buffer(d_out, nframes);
+
+    // Do some actual audio processing
     memcpy (out, in, sizeof(jack_default_audio_sample_t) * nframes);
     d_nprocessed += nframes;
     

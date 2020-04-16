@@ -8,7 +8,7 @@
 #include <iostream>
 #include <complex>
 #include <unistd.h>
-//#include <jack/jack.h>
+
 
 
 void
@@ -69,28 +69,23 @@ main(){
 	if (jclient == NULL){
 		fprintf(stderr, "%s %2.0x\n", "Failed to open client:", jstatus);
 	}
-	snditf ad(jclient);
+	Snditf ad(jclient);
 
-	//jack_set_process_callback(d_client, std::bind(&snditf::work, this, _1), 0);
-	//jack_set_process_callback(d_client, std::bind(&snditf::work, this, _1), 0);
+	Callback<int(jack_nframes_t, void*)>::func = std::bind(&Snditf::work, ad, std::placeholders::_1, std::placeholders::_2);
+    // Convert callback-function to c-pointer.
+    int (*audiocbf)(jack_nframes_t, void*) = static_cast<decltype(audiocbf)>(Callback<int(jack_nframes_t, void*)>::callback);
 
-	//in = jack_port_register (d_client, "in", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-    //d_out = jack_port_register (d_client, "out", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    std::function<int(unsigned int, void*)> cbf = &ad.work;
-	jack_set_process_callback(jclient,
-//		[&ad](jack_nframes_t f, void* a){ return ad.work(f, a); }, NULL);
-//		[&ad](unsigned int f, void* a){ return ad.work(f, a); },
-        cbf
-		, 0);
+	jack_set_process_callback(jclient, audiocbf, NULL);
 
     if (jack_activate(jclient)) {
             fprintf (stderr, "cannot activate client");
             exit(-1);
     }
 
-	//ad.prt();
-	//char* dev = "plughw:2,0";
-	sleep(3);
+	sleep(13);
+	ad.prt();
+	jack_deactivate(jclient);
+	jack_client_close(jclient);
 
 	return(0);
 }

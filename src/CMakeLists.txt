@@ -14,8 +14,8 @@ target_link_libraries(harmest PRIVATE ${FFTW_LIBRARIES} ${VOLK_LIBRARIES})
 target_link_libraries(snditf PRIVATE ${JACK_LIBRARIES} ${VOLK_LIBRARIES})
 
 # All users of this library will need at least C++11
-target_compile_features(harmest PUBLIC cxx_std_14)
-target_compile_features(snditf PUBLIC cxx_std_14)
+target_compile_features(harmest PUBLIC cxx_std_11)
+target_compile_features(snditf PUBLIC cxx_std_11)
 
 # IDEs should put the headers in a nice place
 source_group(TREE "${PROJECT_SOURCE_DIR}/include" PREFIX "Header Files" FILES ${HARMEST_HEADER_LIST})

@@ -11,26 +11,27 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <math.h>
 
 #include <jack/jack.h>
 #include <jack/types.h>
 #include <jack/session.h>
 
 #include <volk/volk.h>
-#include <unistd.h>
 
-
-
-jack_port_t *input_port;
+jack_port_t *in_L, *in_R;
 jack_port_t *output_port;
 jack_client_t *client;
 
 int simple_quit = 0;
 uint64_t processed_frames = 0;
-float avg = 0.f;
-float pwr = 0.f;
+static float pwrL = 0.f;
+static float pwrR = 0.f;
+static float mxL = -2.f;
+static float mxR = -2.f;
 float* buf;
 float* wrk;
+float pha = 0.f;
 
 uint32_t samp_rate = 0;
 uint32_t frames = 1;
@@ -46,26 +47,57 @@ uint32_t frames = 1;
 int
 process (jack_nframes_t nframes, void *arg)
 {
-        jack_default_audio_sample_t *in, *out;
+        jack_default_audio_sample_t *in0, *in1, *out;
 
-        in = jack_port_get_buffer (input_port, nframes);
-        out = jack_port_get_buffer (output_port, nframes);
-        memcpy (out, in, sizeof(jack_default_audio_sample_t) * nframes);
-        memcpy(buf, in, sizeof(float)*nframes);
+        in0 = jack_port_get_buffer(in_L, nframes);
+        in1 = jack_port_get_buffer(in_R, nframes);
+        out = jack_port_get_buffer(output_port, nframes);
+
+        // Down mix to mono
+        /*
+        volk_32f_x2_add_32f(out, in0, in1, nframes);
+        volk_32f_s32f_multiply_32f(out, out, .5f, nframes);
+        */
+
+        // 3kHz sine
+        out[0] = pha;
+        float pha_inc = 6.283f*3.e3f/(float)samp_rate;
+
+        for (int i = 1; i < nframes; ++i)
+        {
+            out[i] = out[i-1] + pha_inc;
+        }
+        volk_32f_cos_32f(out, out, nframes);
+        volk_32f_s32f_multiply_32f(out, out, .45f, nframes);
 
         processed_frames += nframes;
-        volk_32f_accumulator_s32f(&avg, buf, nframes);
-        avg /= (float) nframes;
-        volk_32f_x2_multiply_32f(buf, buf, buf, nframes);
-        volk_32f_accumulator_s32f(&pwr, buf, nframes);        
-        pwr /= (float) nframes;
+
+        volk_32f_x2_multiply_32f(buf, in0, in0, nframes);
+        volk_32f_accumulator_s32f(&pwrL, buf, nframes);
+        pwrL /= (float) nframes;
+        pwrL = 10.f*log10(pwrL);
+
+        volk_32f_x2_multiply_32f(buf, in1, in1, nframes);
+        volk_32f_accumulator_s32f(&pwrR, buf, nframes);
+        pwrR /= (float) nframes;
+        pwrR = 10.f*log10(pwrR);
+
+        for (int i = 0; i < nframes; ++i)
+        {
+            float l = fabs(in0[i]);
+            float r = fabs(in1[i]);
+            if (l > mxL) { mxL = l; }
+            if (r > mxR) { mxR = r; }
+        }
         
-        if (processed_frames%(frames*100) == 0){
+        if (processed_frames%(frames*25) == 0){
             //printf("Frames done: %lu, %d at a time\n", processed_frames, nframes);
-            printf("\ravg: %12.7f pwr: %12.7f", avg, pwr);
+            printf("\rpwrL: %6.2f pwrR: %6.2f mxL: %8.4f mxR %8.4f", pwrL, pwrR, mxL, mxR);
+            mxL = -2.f;
+            mxR = -2.f;
             fflush(stdout);
         }
-        usleep(2000);
+        //usleep(2000);
         
         return 0;
 }
@@ -155,14 +187,13 @@ main (int argc, char *argv[])
         frames = jack_get_buffer_size(client);
         buf = volk_malloc(frames*sizeof(float), volk_get_alignment());
         wrk = volk_malloc(frames*sizeof(float), volk_get_alignment());
+
         for (int i = 0; i < frames; ++i)
         {
-            buf[i] = 2.f;
+            buf[i] = -2.f;
+            /* code */
         }
-        volk_32f_x2_multiply_32f(wrk, buf, buf, frames);
-        volk_32f_accumulator_s32f(&pwr, wrk, frames);        
-        pwr /= (float) frames;
-        printf("Square of buf: %f\n", pwr);
+        printf("%f %f\n", buf[0], fabs(buf[0]) );
 
         printf ("engine sample rate: %" PRIu32 ", %" PRIu32 " at a time\n",
             samp_rate, frames);
@@ -170,14 +201,18 @@ main (int argc, char *argv[])
 
         /* create two ports */
 
-        input_port = jack_port_register (client, "in",
+        in_L = jack_port_register (client, "L",
                                          JACK_DEFAULT_AUDIO_TYPE,
                                          JackPortIsInput, 0);
+        in_R = jack_port_register (client, "R",
+                                         JACK_DEFAULT_AUDIO_TYPE,
+                                         JackPortIsInput, 0);  
+
         output_port = jack_port_register (client, "out",
                                           JACK_DEFAULT_AUDIO_TYPE,
                                           JackPortIsOutput, 0);
 
-        if ((input_port == NULL) || (output_port == NULL)) {
+        if ((in_L == NULL) || (in_R == NULL) || (output_port == NULL)) {
                 fprintf(stderr, "no more JACK ports available\n");
                 exit (1);
         }
@@ -212,9 +247,12 @@ main (int argc, char *argv[])
                         exit (1);
                 }
 
-                if (jack_connect (client, ports[0], jack_port_name (input_port))) {
+                if (jack_connect (client, ports[0], jack_port_name (in_L))) {
                         fprintf (stderr, "cannot connect input ports\n");
                 }
+                if (jack_connect (client, ports[1], jack_port_name (in_R))) {
+                        fprintf (stderr, "cannot connect input ports\n");
+                }                
 
                 free (ports);
 
@@ -225,7 +263,7 @@ main (int argc, char *argv[])
                         exit (1);
                 }
 
-                if (jack_connect (client, jack_port_name (output_port), ports[0])) {
+                if (jack_connect (client, jack_port_name (output_port), ports[2])) {
                         fprintf (stderr, "cannot connect output ports\n");
                 }
 
@@ -235,11 +273,9 @@ main (int argc, char *argv[])
         /* keep running until until we get a quit event */
 
         while (!simple_quit)
-#ifdef WIN32
-                Sleep(1*1000);
-#else
-                sleep(1);
-#endif
+        {
+            sleep(1);
+        }
 
         jack_client_close (client);
         volk_free(buf);
